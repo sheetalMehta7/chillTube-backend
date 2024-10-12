@@ -1,12 +1,16 @@
 {
   "name": "chilltube",
   "version": "1.0.0",
-  "description": "fullstack pro ",
+  "description": "fullstack pro",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js",
+    "start": "node index.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
 }
