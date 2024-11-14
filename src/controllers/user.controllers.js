@@ -227,4 +227,33 @@ const refershAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refershAccessToken };
+
+export const updateCurrentPassword = asyncHandler(async(req, res)=>{
+  // password validation
+  //i need to check the old password is same as the db password
+  // then i need to compare the old password with new password it should not be same
+  // then save the password in db
+  // send info to user that password is updated 
+  const {oldPassword, newPassword, confirmPassword} = req.body;
+  
+    const user = await User.findById(req.user?._id);
+    const isPasswordSame = await user.comparePassword(oldPassword);
+    if(!isPasswordSame){
+      throw new ApiError(400, "Old password is incorrect.")
+    }
+    if(!(newPassword === confirmPassword)){
+      throw new ApiError(400, "Password does not match with confirm password.")
+    }
+    user.password = newPassword;
+    await user.save({validateBeforeSave: false});
+
+
+    res.status(200).json(new ApiResponse(
+      200, 
+      {},
+      "Password changed successfully."
+    ))
+
+})
+
+export { registerUser, loginUser, logoutUser, refershAccessToken, updateCurrentPassword};
