@@ -188,26 +188,25 @@ const refershAccessToken = asyncHandler(async (req, res) => {
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
-  
+
     const user = User.findById(decodedToken?._id);
-  
+
     if (!user) {
       throw new ApiError(401, "Invalid refresh token.");
     }
-  
+
     if (user.refershToken !== incomingRefreshToken) {
       throw new ApiError(401, "Refresh token is expired or used.");
     }
-  
-    const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(
-      user._id
-    );
-  
+
+    const { accessToken, newRefreshToken } =
+      await generateAccessAndRefreshTokens(user._id);
+
     const options = {
       httpOnly: true,
       secure: true,
     };
-  
+
     res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -227,33 +226,34 @@ const refershAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-
-export const updateCurrentPassword = asyncHandler(async(req, res)=>{
+export const updateCurrentPassword = asyncHandler(async (req, res) => {
   // password validation
   //i need to check the old password is same as the db password
   // then i need to compare the old password with new password it should not be same
   // then save the password in db
-  // send info to user that password is updated 
-  const {oldPassword, newPassword, confirmPassword} = req.body;
-  
-    const user = await User.findById(req.user?._id);
-    const isPasswordSame = await user.comparePassword(oldPassword);
-    if(!isPasswordSame){
-      throw new ApiError(400, "Old password is incorrect.")
-    }
-    if(!(newPassword === confirmPassword)){
-      throw new ApiError(400, "Password does not match with confirm password.")
-    }
-    user.password = newPassword;
-    await user.save({validateBeforeSave: false});
+  // send info to user that password is updated
+  const { oldPassword, newPassword, confirmPassword } = req.body;
 
+  const user = await User.findById(req.user?._id);
+  const isPasswordSame = await user.comparePassword(oldPassword);
+  if (!isPasswordSame) {
+    throw new ApiError(400, "Old password is incorrect.");
+  }
+  if (!(newPassword === confirmPassword)) {
+    throw new ApiError(400, "Password does not match with confirm password.");
+  }
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
 
-    res.status(200).json(new ApiResponse(
-      200, 
-      {},
-      "Password changed successfully."
-    ))
+  res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully."));
+});
 
-})
-
-export { registerUser, loginUser, logoutUser, refershAccessToken, updateCurrentPassword};
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refershAccessToken,
+  updateCurrentPassword,
+};
